@@ -221,7 +221,7 @@
                 <div class="main-image-container mb-3 border rounded bg-white shadow-sm">
                     <?php 
                         foreach ($data['Image'] as $Image) {
-                            $URLImagep = URL_IMAGES.'/products_images/thumbnails/'.$Image['Image'];
+                            $URLImagep = URL_IMAGES.'/products_images/originals/'.$Image['Image'];
                             echo "<img id='mainProductImage' src='$URLImagep' class='img-fluid' alt='Producto'>";
                         }
                     ?>
@@ -370,7 +370,7 @@
     const qtyInput = document.getElementById('cart-qty');
 
     function changeImage(src) {
-        document.getElementById('mainProductImage').src = src;
+        document.getElementById('mainProductImage').src = src.replace('/thumbnails/', '/originals/');
     }
 
     function add_cart(){

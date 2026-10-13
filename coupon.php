@@ -39,11 +39,16 @@ if (isset($_POST['g-recaptcha-response'])){
     $response = $_POST['g-recaptcha-response'];
     $verify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret={$recaptcha_secret}&response={$response}");
     $response_data = json_decode($verify);
+    if ($_SESSION['Idioma'] == 'es'){
+        $couponTitle = "¡Tus Cupones Exclusivos!";
+    } else {
+        $couponTitle = "Your Exclusive Coupons!";
+    }
     //if ($response_data->success) {
     if (1==1) {
         ?>
             <div class="container">
-                <h1 class="text-center mb-5 coupon-title text-primary">¡Tus Cupones Exclusivos!</h1>
+                <h1 class="text-center mb-5 coupon-title text-primary"><?= $couponTitle ?></h1>
                 <div class="row g-4">
                     <?php
                         $api_url = URL_API."discounts";

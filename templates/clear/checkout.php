@@ -123,7 +123,12 @@
                                     $data = json_decode(API($jwt,$api_url,$data,'POST'), true);
                                     if ($data['status'] === 'success') {
                                         foreach ($data['data'] as $surface) {
-                                            echo "<option value='".$surface['Id']."'>".$surface['Nombre']."</option>";
+                                            if (strtoupper($_SESSION['Idioma']) == 'ES') {
+                                                echo "<option value='".$surface['Id']."'>".$surface['Nombre']."</option>";
+                                            } else {
+                                                echo "<option value='".$surface['Id']."'>".$surface['Name']."</option>";
+                                            }
+                                            //echo "<option value='".$surface['Id']."'>".$surface['Nombre']."</option>";
                                         }        
                                     } 
                                 ?>
@@ -135,6 +140,7 @@
                             <select class="form-select" aria-label="Default select example" id="tipo_entrega">
                                 <option value="" selected><?= Trd(36) ?></option>
                                 <option value='1'><?= Trd(38) ?></option>
+                                <option value='2'><?= Trd(54) ?></option>
                             </select>                            
 
                         </div>

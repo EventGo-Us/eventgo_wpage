@@ -9,7 +9,15 @@
         
         <div class="hero-text mt-4">
             <h1 class="display-3 fw-bold text-dark"><?php echo COMPANY_NAME?></h1>
-            <p class="lead text-secondary">Creatividad en movimiento.</p>
+            <p class="lead text-secondary">
+            <?php
+            if (strtoupper($_SESSION['Idioma']) == 'ES') {
+                echo 'Llevamos la diversión hasta ti';
+            } else {
+                echo 'Bringing the Fun to You';
+            }
+            ?>    
+            </p>
         </div>
     </div>
 </section>

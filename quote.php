@@ -283,11 +283,18 @@ const FHF = '<?php echo $lead['EndDateTime']?>';
 const FHIp = FHI.split(' ')
 const FHFp = FHF.split(' ')
 
+function formatTime12Hour(time) {
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours, 10);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    return `${hour % 12 || 12}:${minutes} ${period}`;
+}
+
 
     const datosGenerales = {
         leadid: "<?= $lead['Folio'] ?>",
         contractsentdate: "<?= date('Y-m-d') ?>",
-        company_logo: "<?php echo $account['Logo']?>",
+        company_logo: "https://pub-546a2d9d368f4b87a457962de1d77955.r2.dev/<?= $account['Id'] ?>/account/originals/<?= $account['Logo'] ?>",
         company_name: "<?php echo $account['NombreCompania']?>",
         company_address:"<?php echo $account['Direccion']." ".$account['Direccion2'];?>",
         company_city:"<?php echo $account['Ciudad']." ".$account['CP'];?>",
@@ -303,9 +310,9 @@ const FHFp = FHF.split(' ')
         eventzip:"<?php echo $venue['CP']?>",
         phones:"<?php echo $venue['Telefono']?>",
         startdate: FHIp[0],
-        starttime: FHIp[1],
+        starttime: formatTime12Hour(FHIp[1]),
         enddate: FHFp[0],
-        endtime: FHFp[1],
+        endtime: formatTime12Hour(FHFp[1]),
         deliverytype:"ON SITE",
 
         itemtotals: "<?php echo $lead['ItemTotals']?>",
