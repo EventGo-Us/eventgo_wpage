@@ -409,7 +409,7 @@
         $data = '';
         $square_account = json_decode(API($jwt,$api_url,$data,'GET'), true);            
 ?>
-    <script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+    <script type="text/javascript" src="https://web.squarecdn.com/v1/square.js"></script>
     <script>
             const appId = '<?php echo $square_account['Id'];?>';
             const locId = '<?php echo $square_account['LocalId'];?>';
