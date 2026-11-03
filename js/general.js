@@ -414,7 +414,7 @@ function animarCarritoConMensaje(producto) {
     }, 2000);
 }
 
-function agregarExtraAItem(itemId, itemRl,Name,Price,Image,Url) {
+function agregarExtraAItem(itemId, itemRl,Name,Price,Image,Url,grupoExclusivo = null) {
 
 
     const extra = {
@@ -422,23 +422,26 @@ function agregarExtraAItem(itemId, itemRl,Name,Price,Image,Url) {
         nombre: Name,
         precio: Price,
         imagen: Image,
-        url: Url
+        url: Url,
+        ...(grupoExclusivo ? { grupo: grupoExclusivo } : {})
     };    
 
     
     let carrito = obtenerCarrito();
 
-    const item = carrito.find(p => p.id === itemId);
+    const item = carrito.find(p => String(p.id) === String(itemId));
     
     if (item) {
 
         if (!item.adicionales) item.adicionales = [];
         
-        // Verificamos si ya tiene este extra específico para no duplicarlo
-        const existeExtra = item.adicionales.find(a => a.id === extra.id);
+        const existeExtra = item.adicionales.find(a => String(a.id) === String(extra.id));
         
         if (!existeExtra) {
 
+            if (grupoExclusivo) {
+                item.adicionales = item.adicionales.filter(a => a.grupo !== grupoExclusivo);
+            }
             item.adicionales.push(extra);
             // GuardarCarrito ya se encarga de actualizar LocalStorage y refrescar la UI
             guardarCarrito(carrito); 

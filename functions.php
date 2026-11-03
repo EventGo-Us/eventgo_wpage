@@ -79,4 +79,11 @@ function Trd($Idt){
     return $Traducciones[$Idt];
 }
 
+function cambiarQuotPorComillaSimple($texto) {
+    // Primero convertimos las entidades HTML (&quot;) en comillas dobles reales
+    $decodificado = html_entity_decode($texto, ENT_QUOTES, 'UTF-8');
+    
+    // Luego reemplazamos las comillas dobles por comillas simples
+    return str_replace('"', "'", $decodificado);
+} 
 ?>

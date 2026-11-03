@@ -3,7 +3,9 @@
         <div class="row g-4">
             <?php
                 foreach ($data['Accesories'] as $Accesory) {
-                    
+                    if ($Accesory['Category']=='Hidden'){
+                        continue;
+                    }
                     $Accesory['Image'] = URL_IMAGES.'/products_images/thumbnails/'.$Accesory['Image'];
                     $Name = '"'.$Accesory['Name'].'"';
                     $Price = '"'.$Accesory['Price'].'"';
