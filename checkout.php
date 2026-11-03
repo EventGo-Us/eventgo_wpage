@@ -503,7 +503,8 @@ if (email !== '') {
         ZIPO: '<?= $account['CP']  ?>',
         CONO: '<?= $account['Pais']  ?>',
         ZIPD: $('#cp_evento').val().trim(),
-        COND: '<?= $account['Pais']  ?>'
+        COND: '<?= $account['Pais']  ?>',
+        APPLY: <?= $account['DistanceCharge'] ?>
     };    
 
     $.ajax({
@@ -536,7 +537,7 @@ if (email !== '') {
                     success: function(response) {
                         if (response.status === 'success') {
                             //$('#btn_enviar_cotizacion').prop('disabled', false).text('CONFIRMAR RESERVA');
-                            localStorage.removeItem('ds_jumper_cart');
+                            //localStorage.removeItem('ds_jumper_cart');
                             window.location.href = 'quote.php?Id=' + response.UUID;
                         } else {
                             alert("Error: " + response.message);

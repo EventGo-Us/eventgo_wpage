@@ -548,6 +548,10 @@
 <script>
 
 $(document).ready(function() {
+
+    localStorage.removeItem('ds_jumper_cart');
+    renderizarCarrito();
+
     // Escuchar el cambio en los botones de selección de método de pago
     $('input[name="payment_method"]').on('change', function() {
         if ($('#method-paypal').is(':checked')) {

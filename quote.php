@@ -487,12 +487,21 @@ function formatTime12Hour(time) {
 
         $(document).on('click', '.btn-qnt', function() {
             pq = $(this).data('apay');
+            //alert(pq)
             //const subtotal = parseFloat(datosGenerales.total) || 0; // Ajusta según tu variable de precio
             //anticipo = porcentaje;
             //alert (anticipo)
             abrirModalConfirmacionPQ(pq);
         });
 
+        $(document).on('click', '.btn-qnt-tt', function() {
+            pq = $(this).data('apay');
+            //alert(pq)
+            //const subtotal = parseFloat(datosGenerales.total) || 0; // Ajusta según tu variable de precio
+            //anticipo = porcentaje;
+            //alert (anticipo)
+            abrirModalConfirmacionPQ(pq);
+        });
 
 
         function abrirModalAnticipo(monto) {
@@ -669,7 +678,8 @@ function formatTime12Hour(time) {
                 echo "$('#tip-adv-pay-pct').hide();";
                 echo "$('#pay-qnt').html('$'+'". number_format( $account['DepositAmount'],2,'.',',') ."');";
                 echo "$('#pay-qnt').attr('data-apay', '".$account['DepositAmount']."');";
-                
+                echo "$('#pay-qnt-tt').html('$'+'". number_format( $lead['Total'],2,'.',',') ."');";
+                echo "$('#pay-qnt-tt').attr('data-apay', '".$lead['Total']."');";                
             }
         }else{
             
