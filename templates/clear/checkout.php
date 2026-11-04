@@ -86,7 +86,15 @@
 
                         </div>
                     </div>
-                    
+                    <div class="alert alert-warning mb-3" role="alert">
+                        <strong><?= Trd(55) ?></strong> <?= Trd(56) ?>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" value="1" id="acepta_restricciones_ubicacion">
+                            <label class="form-check-label" for="acepta_restricciones_ubicacion">
+                                <?= Trd(57) ?>
+                            </label>
+                        </div>
+                    </div>
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label small fw-bold"><?= Trd(28) ?></label>

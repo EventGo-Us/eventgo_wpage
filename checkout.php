@@ -144,11 +144,56 @@ if (data.cupon.code){
     if (Descuento < totales.total)
         totales.total = totales.total - Descuento;    
 
+    const montoTarjetaRegalo = $('#Idgfc').val() ? (Number($('#Agfc').val()) || 0) : 0;
+    $('#chTarjetaRegalo').text(`$${montoTarjetaRegalo.toFixed(2)}`);
+    totales.total -= montoTarjetaRegalo;
 
     $('#checkout_total').text(`$${totales.total.toFixed(2)}`);
 }
 
+const claveDatosCheckout = 'eventgo_checkout_form_' + <?= json_encode((string) ID_CLIENT) ?> + '_' + window.location.pathname;
+
+function guardarDatosCheckout() {
+    const datos = {};
+    $('.container.py-5 :input[id]').each(function() {
+        datos[this.id] = {
+            value: $(this).val(),
+            checked: this.checked,
+            readOnly: this.readOnly
+        };
+    });
+
+    try {
+        localStorage.setItem(claveDatosCheckout, JSON.stringify(datos));
+    } catch (error) {
+        console.warn('No fue posible guardar los datos del checkout.', error);
+    }
+}
+
+function restaurarDatosCheckout() {
+    let datos;
+    try {
+        datos = JSON.parse(localStorage.getItem(claveDatosCheckout) || '{}');
+    } catch (error) {
+        return;
+    }
+
+    Object.entries(datos).forEach(([id, dato]) => {
+        const campo = document.getElementById(id);
+        if (!campo) return;
+
+        if (campo.type === 'checkbox' || campo.type === 'radio') {
+            campo.checked = Boolean(dato.checked);
+        } else {
+            $(campo).val(dato.value ?? '');
+        }
+        campo.readOnly = Boolean(dato.readOnly);
+    });
+}
+
 $(document).ready(function() {
+    restaurarDatosCheckout();
+    $('.container.py-5').on('input change', ':input[id]', guardarDatosCheckout);
     cargarResumenCheckout();
 });
 
@@ -284,8 +329,7 @@ $('#btn-validar').on('click', function() {
                 <?php }?>
                 $('#ciudad_cliente').val(response.customer.Ciudad);
                 $('#cp_cliente').val(response.customer.CP);
-
-                
+                guardarDatosCheckout();
 
             } else {
                 lanzarAlerta(response.message, 'error');
@@ -320,6 +364,7 @@ $('#btn_copiar_direccion').on('click', function() {
     $('#colonia_evento').val($('#colonia_cliente').val())
 <?php } ?>    
     $('#cp_evento').val($('#cp_cliente').val())
+    guardarDatosCheckout();
 });
 
 $('#btn_enviar_cotizacion').on('click', function() {
@@ -370,6 +415,18 @@ $('#btn_enviar_cotizacion').on('click', function() {
             }
         }
     });
+
+    const $aceptacionUbicacion = $('#acepta_restricciones_ubicacion');
+    if ($aceptacionUbicacion.length && !$aceptacionUbicacion.is(':checked')) {
+        isValid = false;
+        $aceptacionUbicacion.addClass('is-invalid');
+        $aceptacionUbicacion.closest('.form-check').append(
+            '<div class="invalid-feedback d-block"><?= Trd(58) ?></div>'
+        );
+        if (!primerError) {
+            primerError = $aceptacionUbicacion;
+        }
+    }
     
 // Validación más completa para correo electrónico
 let email = $('#email_cliente').val().trim(); // Ajusta el ID según tu campo
@@ -519,7 +576,7 @@ if (email !== '') {
         },  
 
         success: function(response) {
-            if (response.cost && response.cost.success === true) {
+            if (response.cost && response.cost.status === "success") {
             
                 $.ajax({
                     url: '<?php echo URL_API?>process_quote',
@@ -538,6 +595,11 @@ if (email !== '') {
                         if (response.status === 'success') {
                             //$('#btn_enviar_cotizacion').prop('disabled', false).text('CONFIRMAR RESERVA');
                             //localStorage.removeItem('ds_jumper_cart');
+                            try {
+                                localStorage.removeItem(claveDatosCheckout);
+                            } catch (error) {
+                                console.warn('No fue posible borrar los datos guardados del checkout.', error);
+                            }
                             window.location.href = 'quote.php?Id=' + response.UUID;
                         } else {
                             alert("Error: " + response.message);
@@ -551,7 +613,7 @@ if (email !== '') {
                 });            
 
             } else {
-                lanzarAlerta('Lo sentimos, el lugar de tu evento está fuera de nuestro rango de entrega.', 'warning');
+                lanzarAlerta('<?= Trd(59) ?>', 'warning');
                 $('#btn_enviar_cotizacion').prop('disabled', false).text('<?= Trd(20) ?>');
             }
         },
