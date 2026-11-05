@@ -145,6 +145,10 @@
                         <span id="SubTotal" class="fw-bold">$0.00</span>
                     </div>
 
+                    <input type="hidden" id="CUPON">
+                    <input type="hidden" id="TIPOCUPON">
+                    <input type="hidden" id="DESCUENTO">
+
                     <div class="d-flex justify-content-between mb-3">
                         <span id="EtiquetaCupon" class="text-danger fw-bold small" style="font-family:'Comic Neue'">DESCUENTO</span>
                         <span id="Descuento" class="fw-bold text-danger">-$0.00</span>
@@ -152,8 +156,8 @@
 
                     <div class="d-flex justify-content-between align-items-end border-top border-dark pt-3">
                         <span class="comic-label-small fs-4">TOTAL FINAL</span>
-                        <div class="text-end">
-                            <span id="total_monto" class="total-badge">$2,100.00</span>
+                        <div class="text-end fs-5">
+                            <span id="total_monto" class="total-badge text-primary">$0.00</span>
                             <small class="d-block text-muted fw-bold" style="font-size: 0.6rem;">MXN (IVA Incluido)</small>
                         </div>
                     </div>

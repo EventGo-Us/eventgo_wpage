@@ -88,6 +88,7 @@
                     </div>
                     <h2 class="text-center mb-1 mt-2">🟥 ¡<?= Trd(9) ?>!</h2>
                     <p class="section-sub mb-4" style="color:rgba(255,255,255,.8);">— ¡construyamos algo juntos! —</p>
+                    <div id="form-feedback" class="mb-3"></div>
                     <form id="contactForm" method="POST" action="">
                         <div class="row g-3">
                             <div class="col-md-6">

@@ -7,7 +7,10 @@
         <div class="row g-2">
             <?php
                 foreach ($data['Accesories'] as $Accesory) {
-                    
+                    if ($Accesory['Category'] == 'Hidden') {
+                        continue;
+                    }
+
                     $Accesory['Image'] = URL_IMAGES.'/products_images/thumbnails/'.$Accesory['Image'];
                     $Name = '"'.$Accesory['Name'].'"';
                     $Price = '"'.$Accesory['Price'].'"';
@@ -21,7 +24,7 @@
                             $ ".$Accesory['Price']."
                             <br>
                             <button type='button' onclick='agregarExtraAItem({$Accesory['Producto_rp']},{$Accesory['Producto_r']},{$Name},{$Price},{$Image},{$Url})' class='btn btn-dark w-100 fw-bold py-2 shadow-sm rounded-3'>
-                                <i class='fa-solid fa-cart-plus'></i> Agregar a Carrito 
+                                <i class='fa-solid fa-cart-plus'></i> ".Trd(1)."
                             </button>
                         </p>
                     </div>";

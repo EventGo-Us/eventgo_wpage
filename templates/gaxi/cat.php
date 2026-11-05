@@ -20,7 +20,7 @@
                             ? URL_IMAGES.'/categories/thumbnails/'.$imagen
                             : 'src/img/noimage.svg';
                         $URL = str_replace(" ","-",$category['Nombre']);
-                        echo "<div class='swiper-slide'><a href='products/{$URL}' class='cat-card'><img height='150px' src='{$category['Imagen']}' alt='{$category['Nombre']}'> </a></div>";
+                        echo "<div class='swiper-slide'><a href='".URL_BASE."/products/{$URL}' class='cat-card'><img height='150px' src='{$category['Imagen']}' alt='{$category['Nombre']}'></a>{$category['Nombre']}</div>";
                     }        
                 } 
             ?>

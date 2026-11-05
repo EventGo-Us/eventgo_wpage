@@ -89,6 +89,7 @@
                     <div class="caption-box" style="margin-top:8px;">📖 CAPÍTULO 6 — LLAMA A LA LIGA</div>
                     <h2 class="text-center mt-2 mb-1">¡<?= Trd(9) ?>!</h2>
                     <p class="section-sub mb-4">— ¡El cuartel general siempre responde! —</p>
+                    <div id="form-feedback" class="mb-3"></div>
                     <form id="contactForm" method="POST" action="">
                         <div class="row g-3">
                             <div class="col-md-6">

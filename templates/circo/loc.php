@@ -2,6 +2,11 @@
     $api_url = URL_API."Traducciones_web";
     $data = json_encode(['program' => "loc"]);
     $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+    if (strtoupper($_SESSION['Idioma']) == 'ES') {
+        $Horario = 'Lun - Vie: 9:00 AM - 6:00 PM';
+    } else {
+        $Horario = 'Mon - Fri: 9:00 AM - 6:00 PM';
+    }
 ?> 
 <div class="circus-divider"><span>📍 🗺️ 📍</span></div>
     <section class="location-section mb-5 py-5">
@@ -12,7 +17,7 @@
                 <ul class="list-unstyled mt-3">
                     <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i><?php echo DIRECCION1?></li>
                     <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i><?php echo DIRECCION2?></li>
-                    <li class="mb-2"><i class="fas fa-clock me-2"></i> Lun - Vie: 9:00 AM - 6:00 PM</li>
+                    <li class="mb-2"><i class="fas fa-clock me-2"></i> <?= $Horario ?></li>
                 </ul>
             </div>
             <div class="col-md-7">

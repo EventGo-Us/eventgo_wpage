@@ -84,6 +84,7 @@
             <div class="col-md-8">
                 <div class="contact-card">
                     <h2 class="text-center mb-4">🎉 ¡<?= Trd(9) ?>!</h2>
+                    <div id="form-feedback" class="mb-3"></div>
                     <form id="contactForm" method="POST" action="">
                         <div class="row g-3">
                             <div class="col-md-6">

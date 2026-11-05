@@ -86,7 +86,15 @@
 
                         </div>
                     </div>
-                    
+                    <div class="alert alert-warning mb-3" role="alert">
+                        <strong><?= Trd(55) ?></strong> <?= Trd(56) ?>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" value="1" id="acepta_restricciones_ubicacion">
+                            <label class="form-check-label" for="acepta_restricciones_ubicacion">
+                                <?= Trd(57) ?>
+                            </label>
+                        </div>
+                    </div>
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label small fw-bold"><?= Trd(28) ?></label>
@@ -123,7 +131,11 @@
                                     $data = json_decode(API($jwt,$api_url,$data,'POST'), true);
                                     if ($data['status'] === 'success') {
                                         foreach ($data['data'] as $surface) {
-                                            echo "<option value='".$surface['Id']."'>".$surface['Nombre']."</option>";
+                                            if (strtoupper($_SESSION['Idioma']) == 'ES') {
+                                                echo "<option value='".$surface['Id']."'>".$surface['Nombre']."</option>";
+                                            } else {
+                                                echo "<option value='".$surface['Id']."'>".$surface['Name']."</option>";
+                                            }
                                         }        
                                     } 
                                 ?>
@@ -135,6 +147,7 @@
                             <select class="form-select" aria-label="Default select example" id="tipo_entrega">
                                 <option value="" selected><?= Trd(36) ?></option>
                                 <option value='1'><?= Trd(38) ?></option>
+                                <option value='2'><?= Trd(54) ?></option>
                             </select>                            
 
                         </div>

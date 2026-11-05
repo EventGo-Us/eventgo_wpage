@@ -9,8 +9,16 @@
                     foreach ($data['UpSelling'] as $UpSelling) {
                         $UpSelling['Image'] = URL_IMAGES.'/products_images/thumbnails/'.$UpSelling['Image'];
                         $URL = str_replace(" ","-",$UpSelling['Name']);
+                        $Rup = str_replace(" ","-",$UpSelling['Producto_rup']);
+                        $DTS = '';
+                        if (isset($_GET['SD'], $_GET['ED'], $_GET['SH'], $_GET['EH'])) {
+                            $DTS = '&SD='.rawurlencode($_GET['SD'])
+                                .'&ED='.rawurlencode($_GET['ED'])
+                                .'&SH='.rawurlencode($_GET['SH'])
+                                .'&EH='.rawurlencode($_GET['EH']);
+                        }
                         echo "  <div class='swiper-slide'>
-                                    <a href='".URL_BASE."/product/{$URL}' class='cat-card'>
+                                    <a href='".URL_BASE."/product/{$URL}?Idp={$Rup}{$DTS}' class='cat-card'>
 
                                     <img height='150px' src='{$UpSelling['Image']}' alt='{$UpSelling['Name']}'> 
                                     <br>
