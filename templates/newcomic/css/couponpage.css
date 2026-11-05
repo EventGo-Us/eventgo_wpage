@@ -1,0 +1,92 @@
+
+        /* Apply the comic font to coupon titles and codes. */
+        .coupon-title, .coupon-code {
+            font-family: 'Bangers', cursive;
+            letter-spacing: 2px;
+        }
+
+        /* Estilo base de la tarjeta */
+        .coupon-card {
+            background-color: var(--white);
+            /* Borde punteado grueso para simular recorte */
+            border: 4px solid var(--ink);
+            border-radius: 0;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease-in-out, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efecto hover sutil */
+        .coupon-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--red);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Decoración de semicírculos laterales (Efecto ticket) */
+        .coupon-card::before, .coupon-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            background-color: var(--paper);
+            border-radius: 50%;
+            transform: translateY(-50%);
+            border: 3px solid var(--ink);
+        }
+        
+        /* Asegurar que el borde punteado de los círculos coincida con el hover */
+        .coupon-card:hover::before, .coupon-card:hover::after {
+            border-color: var(--red);
+        }
+
+        .coupon-card::before {
+            left: -12px; /* Muesca izquierda */
+        }
+
+        .coupon-card::after {
+            right: -12px; /* Muesca derecha */
+        }
+
+        /* Estilo del código del cupón */
+        .coupon-code-container {
+            background-color: var(--yellow);
+            border: 2px solid var(--ink);
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .coupon-code {
+            font-size: 1.5rem;
+            color: var(--blue);
+            margin: 0;
+        }
+
+        /* Estilo del botón personalizado */
+        .btn-coupon {
+            font-family: 'Bangers', cursive;
+            background-color: var(--red);
+            color: var(--yellow);
+            border: 3px solid var(--ink);
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-coupon:hover {
+            background-color: var(--blue);
+            color: var(--white);
+            transform: scale(1.05);    /* Efecto de pulso */
+        }
+
+        /* Clase para cuando ya se copió */
+        .btn-copied {
+            background-color: var(--green) !important;
+            color: #ffffff !important;
+            border-color: var(--ink) !important;
+        }        

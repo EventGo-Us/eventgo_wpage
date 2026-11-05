@@ -1,7 +1,7 @@
 <section class="hero-logo-section">
     <div class="hero-inner">
         <div class="logo-badge">
-            <img src="https://dsjumpers.com/wp-content/uploads/2025/02/cropped-Logotipo-D%C2%B4S-Jumpers-qnohhmv0x0akjoiwicpksyn98vul3qjxppjyzgt6og.webp" alt="logo">
+            <img src="<?php echo COMPANY_LOGO?>" alt="logo">
         </div>
         <h1 class="hero-title"><?= COMPANY ?></h1>
         <p class="hero-sub">🎪 Creatividad en Movimiento 🎪</p>
