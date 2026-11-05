@@ -455,6 +455,23 @@ section.bg-white {
     color: var(--extreme-muted) !important;
 }
 
+.text-primary,
+.text-info {
+    color: var(--extreme-cyan) !important;
+}
+
+.text-success {
+    color: var(--extreme-lime) !important;
+}
+
+.text-warning {
+    color: #ffd166 !important;
+}
+
+.text-danger {
+    color: #ff7a59 !important;
+}
+
 .btn {
     border: 0;
     border-radius: 2px;
@@ -523,24 +540,39 @@ section.bg-white {
     background: var(--extreme-cyan);
 }
 
-.form-control,
-.form-select {
+body .form-control,
+body .form-select {
     border: 1px solid rgba(0, 240, 255, .2);
     border-radius: 2px;
     color: var(--extreme-white);
-    background-color: rgba(8, 12, 20, .74);
+    background-color: rgba(8, 12, 20, .94) !important;
 }
 
-.form-control::placeholder {
-    color: #8795a7;
+body .form-control::placeholder {
+    color: #aebaca;
 }
 
-.form-control:focus,
-.form-select:focus {
+body .form-control:focus,
+body .form-select:focus {
     border-color: var(--extreme-cyan);
     color: #fff;
-    background-color: rgba(8, 12, 20, .9);
+    background-color: rgba(8, 12, 20, .98) !important;
     box-shadow: 0 0 0 .2rem rgba(0, 240, 255, .14), 0 0 16px rgba(0, 240, 255, .12);
+}
+
+body .form-control:disabled,
+body .form-control[readonly],
+body .form-select:disabled {
+    color: var(--extreme-white);
+    background-color: rgba(8, 12, 20, .94) !important;
+    opacity: 1;
+}
+
+body .form-control:-webkit-autofill,
+body .form-control:-webkit-autofill:hover,
+body .form-control:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--extreme-white);
+    -webkit-box-shadow: 0 0 0 1000px #080c14 inset;
 }
 
 .form-select option {
