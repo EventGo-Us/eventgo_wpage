@@ -303,6 +303,25 @@ function LoadDocument(){
         $data ='';
         $account = json_decode(API($jwt,$api_url,$data,'GET'), true);
 
+        $data = '';
+        $api_url = URL_API."PAYPAL";
+        $paypal_account = json_decode(API($jwt,$api_url,$data,'GET'), true);
+
+        $api_url = URL_API."SQUARE";
+        $square_account = json_decode(API($jwt,$api_url,$data,'GET'), true);
+
+        $api_url = URL_API."OPAY";
+        $opay_account = json_decode(API($jwt,$api_url,$data,'GET'), true);
+
+        $PayPlatform = $account['Pay_platform'];
+        $pay_account = $PayPlatform == 'OPAY' ? $opay_account : $square_account;
+        $card_charge_enabled = ($paypal_account['extracharge'] ?? null) == 1
+            || ($square_account['extracharge'] ?? null) == 1
+            || ($opay_account['extracharge'] ?? null) == 1;
+        $card_charge_percentage = $card_charge_enabled && isset($pay_account['percentage'])
+            ? (float) $pay_account['percentage']
+            : 0;
+
         //$api_url = URL_API."tip_deposit";
         //$data = json_encode(['tip' => $Tip,'apay' => $APay,'quote' => $cotizacion['IdQuote']]);
         //$Tips = json_decode(API($jwt,$api_url,$data,'POST'), true);
@@ -369,6 +388,8 @@ function formatTime12Hour(time) {
         tip: "<?php echo $lead['Tip']?>",
         total: "<?php echo $lead['Total']?>",
         apayment: "<?php echo $lead['DepositAmount']?>",
+        cardcharge: <?= json_encode($card_charge_percentage > 0 ? (float) $lead['DepositAmount'] * ($card_charge_percentage / 100) : 0) ?>,
+        atopay: <?= json_encode($card_charge_percentage > 0 ? (float) $lead['DepositAmount'] * (1 + ($card_charge_percentage / 100)) : 0) ?>,
         //ctr_balance_due: "<?php echo $lead['Balance']?>",
         <?php  if ($account['Deposit'] == 1){?>
             ctr_balance_due: "<?php if ($lead['BalanceQ'] == ""){echo $lead['Total'] - $lead['DepositAmount'];}else{echo $lead['BalanceQ'];}?>",
@@ -385,8 +406,7 @@ function formatTime12Hour(time) {
 
 <?php
     //echo $respuesta['script_push'];
-    $push_procesado = str_replace('.avif', '.jpg', $respuesta['script_push']);
-    echo $push_procesado;
+    echo $respuesta['script_push'];
     if ($discounts) {
         foreach ($discounts as $discount) {
             echo "
@@ -489,6 +509,12 @@ function ejecutarRenderizadoContract($contenedor, $cuerpoTabla, $filaPlantilla, 
         let contenidoActual = $contenedor.html();
         $contenedor.html(contenidoActual.replace(regex, val ?? ''));
     });
+
+    <?php if ($card_charge_percentage > 0) { ?>
+        $contenedor.find('#tr-cardcharge, #tr-atopay').show();
+    <?php } else { ?>
+        $contenedor.find('#tr-cardcharge, #tr-atopay').hide();
+    <?php } ?>
 
 }
 

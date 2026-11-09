@@ -7,6 +7,43 @@
     $api_url = URL_API."Traducciones_web";
     $datat = json_encode(['program' => "general"]);
     $Traducciones = json_decode(API($jwt,$api_url,$datat,'GET'), true);
+
+    $api_url = URL_API."get_blackout_dates";
+    $datat = '';
+    $blackout_dates_response = json_decode(API($jwt,$api_url,$datat,'GET'), true);
+    $blackout_dates = [];
+    if (
+        isset($blackout_dates_response['status']) &&
+        $blackout_dates_response['status'] === 'success' &&
+        isset($blackout_dates_response['data']) &&
+        is_array($blackout_dates_response['data'])
+    ) {
+        foreach ($blackout_dates_response['data'] as $blackout_date) {
+            $fecha_inicio = $blackout_date['fecha_inicio'] ?? null;
+            $fecha_fin = $blackout_date['fecha_fin'] ?? null;
+            $inicio = is_string($fecha_inicio) ? DateTime::createFromFormat('!Y-m-d', $fecha_inicio) : false;
+            $fin = is_string($fecha_fin) ? DateTime::createFromFormat('!Y-m-d', $fecha_fin) : false;
+
+            if (
+                !$inicio || $inicio->format('Y-m-d') !== $fecha_inicio ||
+                !$fin || $fin->format('Y-m-d') !== $fecha_fin ||
+                $fecha_inicio > $fecha_fin
+            ) {
+                error_log('La API devolvió un periodo de fechas no operativas inválido.');
+                continue;
+            }
+
+            $blackout_dates[] = [
+                'from' => $fecha_inicio,
+                'to' => $fecha_fin
+            ];
+        }
+    } else {
+        $error = isset($blackout_dates_response['message'])
+            ? $blackout_dates_response['message']
+            : json_last_error_msg();
+        error_log('Error al consultar fechas no operativas: ' . $error);
+    }
 ?> 
 
 // Lógica simple para el contador del carrito
@@ -20,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         inline: true,
         locale: "es",
         minDate: "today",
+        disable: <?= json_encode($blackout_dates, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>,
         dateFormat: "Y-m-d"
     });
 

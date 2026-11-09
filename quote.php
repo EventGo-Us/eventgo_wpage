@@ -139,6 +139,25 @@
         $data ='';
         $account = json_decode(API($jwt,$api_url,$data,'GET'), true);
 
+        $data = '';
+        $api_url = URL_API."PAYPAL";
+        $paypal_account = json_decode(API($jwt,$api_url,$data,'GET'), true);
+
+        $api_url = URL_API."SQUARE";
+        $square_account = json_decode(API($jwt,$api_url,$data,'GET'), true);
+
+        $api_url = URL_API."OPAY";
+        $opay_account = json_decode(API($jwt,$api_url,$data,'GET'), true);
+
+        $PayPlatform = $account['Pay_platform'];
+        $pay_account = $PayPlatform == 'OPAY' ? $opay_account : $square_account;
+        $card_charge_enabled = ($paypal_account['extracharge'] ?? null) == 1
+            || ($square_account['extracharge'] ?? null) == 1
+            || ($opay_account['extracharge'] ?? null) == 1;
+        $card_charge_percentage = $card_charge_enabled && isset($pay_account['percentage'])
+            ? (float) $pay_account['percentage']
+            : 0;
+
         $api_url = URL_API."tip_deposit";
         $data = json_encode(['tip' => $Tip,'apay' => $APay, 'pq' => $PQ ,'quote' => $cotizacion['IdQuote']]);
         $Tips = json_decode(API($jwt,$api_url,$data,'POST'), true);
@@ -328,6 +347,8 @@ function formatTime12Hour(time) {
         total: "<?php echo $lead['Total']?>",
         totalbt: "<?php echo $lead['TotalBT']?>",
         apayment: "<?php echo $lead['DepositAmount']?>",
+        cardcharge: <?= json_encode($card_charge_percentage > 0 ? (float) $lead['DepositAmount'] * ($card_charge_percentage / 100) : 0) ?>,
+        atopay: <?= json_encode($card_charge_percentage > 0 ? (float) $lead['DepositAmount'] * (1 + ($card_charge_percentage / 100)) : 0) ?>,
         <?php  if ($account['Deposit'] == 1){?>
             balancedue: "<?php if ($lead['BalanceQ'] == ""){echo $lead['Total'] - $lead['DepositAmount'];}else{echo $lead['BalanceQ'];}?>",
         <?php  } else {?>
@@ -663,6 +684,12 @@ function formatTime12Hour(time) {
             let contenidoActual = $contenedor.html();
             $contenedor.html(contenidoActual.replace(regex, val ?? ''));
         });
+
+        <?php if ($card_charge_percentage > 0) { ?>
+            $contenedor.find('#tr-cardcharge, #tr-atopay').show();
+        <?php } else { ?>
+            $contenedor.find('#tr-cardcharge, #tr-atopay').hide();
+        <?php } ?>
 
         <?php
         if ($account['Deposit'] == 1){

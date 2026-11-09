@@ -103,7 +103,23 @@
         }
 
         $PayPlatform = $account['Pay_platform'];
+        if ($PayPlatform == 'OPAY'){
+            $api_url = URL_API."OPAY";
+        }
+        else{
+            $api_url = URL_API."SQUARE";
+        }
 
+        $data = '';
+        $pay_account = json_decode(API($jwt,$api_url,$data,'GET'), true);
+        $extra_pctj = isset($pay_account['extracharge']) && $pay_account['extracharge'] == 1 && isset($pay_account['percentage'])
+            ? (float) $pay_account['percentage'] / 100
+            : 0;
+        $paypal_extra_pctj = isset($paypal_account['extracharge']) && $paypal_account['extracharge'] == 1 && isset($paypal_account['percentage'])
+            ? (float) $paypal_account['percentage'] / 100
+            : 0;
+
+        
         //$api_url = URL_API."tip_deposit";
         //$data = json_encode(['tip' => $Tip,'apay' => $APay,'quote' => $cotizacion['IdQuote']]);
         //$Tips = json_decode(API($jwt,$api_url,$data,'POST'), true);
@@ -248,6 +264,11 @@
                         <span class="fw-bold">$<?php echo number_format($lead['Balance'], 2, '.', ',') ;?></span>
                     </div>
 
+                    <div class="d-flex justify-content-between align-items-center mb-2 d-none" id="div-pago-extra">
+                        <span class="text-muted"><?= Trd(31) ?> (<?= number_format((float)$extra_pctj * 100, 2) ?>%):</span>
+                        <span class="fw-bold" id="display-pago-extra">$0.00</span>
+                    </div>
+                  
                     <hr>
 
                     <div class="p-3 bg-light border rounded">
@@ -271,9 +292,13 @@
                         
                         <div class="text-center mt-3">
                             <?php if ($PayPlatform == 'OPAY'){?>
+                            <!-- Openpay Logo 
                                 <img src="https://www.openpay.mx/_ipx/_/img/header/openpay-color.svg" alt="Openpay" style="height: 25px; opacity: 0.6;">
+                            -->
                             <?php } else { ?>
+                            <!-- Square Logo 
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Square%2C_Inc._logo.svg/1280px-Square%2C_Inc._logo.svg.png" alt="Square" style="height: 25px; opacity: 0.6;">
+                            -->
                             <?php } ?>                     
                         </div>
                     </div>
@@ -300,7 +325,7 @@
             // Configuración Openpay
             OpenPay.setId('<?php echo $opay_account['Id'];?>');
             OpenPay.setApiKey('<?php echo $opay_account['PublicKey'];?>');
-            OpenPay.setSandboxMode(true);
+            OpenPay.setSandboxMode('<?php echo $opay_account['sandbox'];?>');
             OpenPay.deviceData.setup("payment-form", "deviceIdHiddenFieldName");
 
             // --- VALIDACIONES DE INPUTS ---
@@ -407,9 +432,14 @@
     else{
         $api_url = URL_API."SQUARE";
         $data = '';
-        $square_account = json_decode(API($jwt,$api_url,$data,'GET'), true);            
+        $square_account = json_decode(API($jwt,$api_url,$data,'GET'), true);   
+        if($square_account['sandbox']=='1'){
+            echo '<script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>';
+        }
+        else{
+            echo '<script type="text/javascript" src="https://web.squarecdn.com/v1/square.js"></script>';
+        }         
 ?>
-    <script type="text/javascript" src="https://web.squarecdn.com/v1/square.js"></script>
     <script>
             const appId = '<?php echo $square_account['Id'];?>';
             const locId = '<?php echo $square_account['LocalId'];?>';
@@ -496,6 +526,49 @@
         initSquare();
     </script>
 <?php }?>
+
+<script>
+const montoBaseCents = <?= json_encode((int) round((float) $lead['DepositAmount'] * 100)) ?>;
+const extraPctj = <?= json_encode((float) $extra_pctj) ?>;
+const paypalExtraPctj = <?= json_encode((float) $paypal_extra_pctj) ?>;
+
+function actualizarResumenPago() {
+    const tipoPago = $('#method-paypal').length && $('#method-paypal').is(':checked')
+        ? 'paypal'
+        : 'tarjeta';
+    const porcentaje = tipoPago === 'paypal' ? paypalExtraPctj : extraPctj;
+    const extraCents = porcentaje > 0
+        ? Math.round(montoBaseCents * porcentaje + Number.EPSILON)
+        : 0;
+    const totalCents = montoBaseCents + extraCents;
+
+    $('#monto-final').val((totalCents / 100).toFixed(2));
+    $('#div-pago-extra').toggleClass('d-none', extraCents <= 0);
+    $('#div-pago-extra .text-muted').text(
+        (tipoPago === 'paypal' ? 'Cargo PayPal (' : 'Extra tarjeta (') +
+        (porcentaje * 100).toFixed(2) + '%):'
+    );
+    $('#display-pago-extra').text('$' + (extraCents / 100).toFixed(2));
+    $('#display-pago-hoy').text('$' + (totalCents / 100).toFixed(2));
+}
+
+function getPayPalPaymentAmounts() {
+    const extraCents = paypalExtraPctj > 0
+        ? Math.round(montoBaseCents * paypalExtraPctj + Number.EPSILON)
+        : 0;
+
+    return {
+        baseAmount: (montoBaseCents / 100).toFixed(2),
+        extraAmount: (extraCents / 100).toFixed(2),
+        totalAmount: ((montoBaseCents + extraCents) / 100).toFixed(2)
+    };
+}
+
+$(document).ready(function() {
+    actualizarResumenPago();
+    $('input[name="payment_method"]').on('change', actualizarResumenPago);
+});
+</script>
 
 
 
@@ -600,8 +673,29 @@ $(document).ready(function() {
         },
 
         createOrder: function(data, actions) {
-            // Obtenemos el monto directamente del input hidden dinámico de tu PHP
-            var monto = $('#monto-final').val(); 
+            const amounts = getPayPalPaymentAmounts();
+            const currency = '<?= $account['Currency'] ?>';
+            const items = [{
+                name: 'Pago de cotización',
+                sku: 'Payment',
+                unit_amount: {
+                    currency_code: currency,
+                    value: amounts.baseAmount
+                },
+                quantity: '1'
+            }];
+
+            if (parseFloat(amounts.extraAmount) > 0) {
+                items.push({
+                    name: 'Cargo PayPal (' + (paypalExtraPctj * 100).toFixed(2) + '%)',
+                    sku: 'PayPalFee',
+                    unit_amount: {
+                        currency_code: currency,
+                        value: amounts.extraAmount
+                    },
+                    quantity: '1'
+                });
+            }
             
             return actions.order.create({
                 application_context: {
@@ -609,14 +703,23 @@ $(document).ready(function() {
                 },
                 purchase_units: [{
                     amount: {
-                        value: monto
-                    }
+                        currency_code: currency,
+                        value: amounts.totalAmount,
+                        breakdown: {
+                            item_total: {
+                                currency_code: currency,
+                                value: amounts.totalAmount
+                            }
+                        }
+                    },
+                    items: items
                 }]
             });
         },
 
         onApprove: function(data, actions) {
             return actions.order.capture().then(function(orderData) {
+                $('#monto-final').val(getPayPalPaymentAmounts().totalAmount);
                 // Serializamos los datos del formulario (nombre, email, etc) + los datos de PayPal
                 var formData = $('#payment-form').serialize();
                 formData +='&orderID=' + encodeURIComponent(data.orderID);

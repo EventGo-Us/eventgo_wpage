@@ -9,6 +9,10 @@ document.addEventListener('DOMContentLoaded', function() {
         inline: true,
         locale: "es",
         minDate: "today",
+        disable: [{
+            from: "2026-11-14",
+            to: "2026-11-18"
+        }],
         dateFormat: "Y-m-d"
     });
 
