@@ -388,7 +388,13 @@
                                 //alert("¡Pago Exitoso! ID de transacción: " + respuestaBackend.transaction_id);
                                 // Opcional: Redirigir a página de éxito
                                 //window.location.href =  respuestaBackend.url;
-                                window.location.replace(respuestaBackend.url);
+                                const amounts = getCardPaymentAmounts();
+                                window.location.replace(getPaymentSuccessUrl(
+                                    respuestaBackend.url,
+                                    paymentPlatform,
+                                    amounts.extraAmount,
+                                    amounts.totalAmount
+                                ));
                             } else if (respuestaBackend.status === 'pending') {
                                 // Manejo de 3D Secure (Si el banco pide autenticación extra)
                                 window.location.href = respuestaBackend.url;
@@ -492,7 +498,13 @@
                         },                      
                         success: function(respuestaBackend) {
                             if(respuestaBackend.status === 'success') {
-                                window.location.replace(respuestaBackend.url);
+                                const amounts = getCardPaymentAmounts();
+                                window.location.replace(getPaymentSuccessUrl(
+                                    respuestaBackend.url,
+                                    paymentPlatform,
+                                    amounts.extraAmount,
+                                    amounts.totalAmount
+                                ));
                             } else if (respuestaBackend.status === 'pending') {
                                 //window.location.href = respuestaBackend.url;
                             }
@@ -531,25 +543,47 @@
 const montoBaseCents = <?= json_encode((int) round((float) $lead['DepositAmount'] * 100)) ?>;
 const extraPctj = <?= json_encode((float) $extra_pctj) ?>;
 const paypalExtraPctj = <?= json_encode((float) $paypal_extra_pctj) ?>;
+const paymentPlatform = <?= json_encode($PayPlatform === 'OPAY' ? 'OPAY' : 'SQUARE') ?>;
+
+function getPaymentSuccessUrl(url, platform, extraAmount, totalAmount) {
+    const successUrl = new URL(url, window.location.href);
+    if (successUrl.origin === window.location.origin &&
+        successUrl.pathname.endsWith('/successpayment.php')) {
+        successUrl.searchParams.set('payment_platform', platform);
+        successUrl.searchParams.set('extra_amount', extraAmount);
+        successUrl.searchParams.set('payment_total', totalAmount);
+    }
+    return successUrl.toString();
+}
+
+function getCardPaymentAmounts() {
+    const extraCents = extraPctj > 0
+        ? Math.round(montoBaseCents * extraPctj + Number.EPSILON)
+        : 0;
+
+    return {
+        extraAmount: (extraCents / 100).toFixed(2),
+        totalAmount: ((montoBaseCents + extraCents) / 100).toFixed(2)
+    };
+}
 
 function actualizarResumenPago() {
     const tipoPago = $('#method-paypal').length && $('#method-paypal').is(':checked')
         ? 'paypal'
         : 'tarjeta';
+    const amounts = tipoPago === 'paypal'
+        ? getPayPalPaymentAmounts()
+        : getCardPaymentAmounts();
     const porcentaje = tipoPago === 'paypal' ? paypalExtraPctj : extraPctj;
-    const extraCents = porcentaje > 0
-        ? Math.round(montoBaseCents * porcentaje + Number.EPSILON)
-        : 0;
-    const totalCents = montoBaseCents + extraCents;
 
-    $('#monto-final').val((totalCents / 100).toFixed(2));
-    $('#div-pago-extra').toggleClass('d-none', extraCents <= 0);
+    $('#monto-final').val(amounts.totalAmount);
+    $('#div-pago-extra').toggleClass('d-none', parseFloat(amounts.extraAmount) <= 0);
     $('#div-pago-extra .text-muted').text(
         (tipoPago === 'paypal' ? 'Cargo PayPal (' : 'Extra tarjeta (') +
         (porcentaje * 100).toFixed(2) + '%):'
     );
-    $('#display-pago-extra').text('$' + (extraCents / 100).toFixed(2));
-    $('#display-pago-hoy').text('$' + (totalCents / 100).toFixed(2));
+    $('#display-pago-extra').text('$' + amounts.extraAmount);
+    $('#display-pago-hoy').text('$' + amounts.totalAmount);
 }
 
 function getPayPalPaymentAmounts() {
@@ -719,7 +753,8 @@ $(document).ready(function() {
 
         onApprove: function(data, actions) {
             return actions.order.capture().then(function(orderData) {
-                $('#monto-final').val(getPayPalPaymentAmounts().totalAmount);
+                const amounts = getPayPalPaymentAmounts();
+                $('#monto-final').val(amounts.totalAmount);
                 // Serializamos los datos del formulario (nombre, email, etc) + los datos de PayPal
                 var formData = $('#payment-form').serialize();
                 formData +='&orderID=' + encodeURIComponent(data.orderID);
@@ -739,7 +774,12 @@ $(document).ready(function() {
                     },
                     success: function(respuestaBackend) {
                         if(respuestaBackend.status === 'success') {
-                            window.location.replace(respuestaBackend.url);
+                            window.location.replace(getPaymentSuccessUrl(
+                                respuestaBackend.url,
+                                'PAYPAL',
+                                amounts.extraAmount,
+                                amounts.totalAmount
+                            ));
                         } else {
                             $('#payment-status-container').html('<div class="alert alert-danger">'+ respuestaBackend.message +'</div>');
                         }

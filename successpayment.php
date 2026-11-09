@@ -47,7 +47,22 @@
         }
 
         $token = $_GET['Id']; // El UUID de la URL
-        $TId = $_GET['TId']; // El UUID de la URL
+        $TId = $_GET['TId'] ?? ''; // El UUID de la URL
+        $paymentPlatforms = [
+            'OPAY' => 'Openpay',
+            'SQUARE' => 'Square',
+            'PAYPAL' => 'PayPal',
+        ];
+        $paymentPlatform = $_GET['payment_platform'] ?? '';
+        $extraAmountCents = isset($_GET['extra_amount']) && is_numeric($_GET['extra_amount'])
+            ? max(0, (int) round((float) $_GET['extra_amount'] * 100))
+            : 0;
+        $paymentTotalCents = isset($_GET['payment_total']) && is_numeric($_GET['payment_total'])
+            ? max(0, (int) round((float) $_GET['payment_total'] * 100))
+            : 0;
+        $showExtraCharge = $extraAmountCents > 0
+            && $paymentTotalCents > 0
+            && isset($paymentPlatforms[$paymentPlatform]);
         $ahora = date("Y-m-d H:i:s");
 
 
@@ -128,6 +143,25 @@
                         <span class="text-muted"><?= Trd(5) ?></span>
                         <span class="fw-bold text-success">+$<?php echo number_format($lead['SubTotal'] + $lead['TaxAmount'] + $lead['Tip'] - $lead['Balance'], 2, '.', ',') ;?></span>
                     </div>
+
+                    <?php if ($showExtraCharge): ?>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">
+                            <?= Trd(14) ?>
+                            (<?= htmlspecialchars($paymentPlatforms[$paymentPlatform], ENT_QUOTES, 'UTF-8') ?>)
+                        </span>
+                        <span class="fw-bold">
+                            +$<?= number_format($extraAmountCents / 100, 2, '.', ',') ?>
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted"><?= Trd(15) ?></span>
+                        <span class="fw-bold">
+                            $<?= number_format($paymentTotalCents / 100, 2, '.', ',') ?>
+                        </span>
+                    </div>
+                    <?php endif; ?>
+
                     <div class="d-flex justify-content-between mb-3">
                         <span class="text-muted"><?= Trd(6) ?></span>
                         <span class="fw-medium">$<?php echo number_format($lead['SubTotal'] + $lead['TaxAmount'] + $lead['Tip'] , 2, '.', ',') ;?></span>
