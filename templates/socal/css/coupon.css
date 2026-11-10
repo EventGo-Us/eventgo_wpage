@@ -1,0 +1,156 @@
+/* ==========================================================================
+   TEMPLATE / SOCIAL — cupón flotante (home)
+   Identidad: morado #720d98 · amarillo #ffdc0d · tipografía Roboto
+   Se conservan íntegros los selectores, IDs y animaciones que consume el JS
+   (.floating-card, #couponCard, #couponTab, .animate-bounce, etc.).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Tarjeta flotante
+   -------------------------------------------------------------------------- */
+.floating-card {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 320px;
+    z-index: 1060;
+    display: none; /* Oculta inicialmente; el JS controla fadeIn/fadeOut */
+    overflow: hidden;
+    background-color: var(--social-surface, #fff);
+    border: 1px solid var(--social-line, rgba(0, 0, 0, .08));
+    border-radius: var(--social-radius-lg, 18px);
+    box-shadow: 0 34px 70px -30px rgba(0, 0, 0, .5);
+}
+
+.floating-card img {
+    margin-top: -30px;
+    background-color: #fff;
+    border: 5px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 14px 30px -18px rgba(0, 0, 0, .5);
+}
+
+.floating-card .card-header-custom {
+    padding: .5rem .65rem 0 0;
+}
+
+.card-header-custom {
+    background: transparent;
+    border: none;
+}
+
+.floating-card .card-text {
+    color: var(--social-muted, #767676);
+}
+
+/* --------------------------------------------------------------------------
+   Pestaña / botón de cupón
+   -------------------------------------------------------------------------- */
+#couponTab {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1050;
+    display: none;
+    padding: .8rem 1.55rem;
+    background-color: var(--social-primary, #720d98);
+    color: #fff;
+    font-family: var(--social-font, sans-serif);
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    border: 3px solid #fff;
+    border-radius: var(--social-pill, 999px);
+    box-shadow: 0 16px 34px -14px rgba(114, 13, 152, .75);
+    cursor: pointer;
+    transition: background-color .25s cubic-bezier(.22, .61, .36, 1),
+        transform .25s cubic-bezier(.22, .61, .36, 1),
+        box-shadow .25s cubic-bezier(.22, .61, .36, 1);
+}
+
+/* Pulso del halo morado */
+@keyframes pulse-blue {
+    0% { box-shadow: 0 0 0 0 rgba(114, 13, 152, .65); }
+    70% { box-shadow: 0 0 0 12px rgba(114, 13, 152, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(114, 13, 152, 0); }
+}
+
+#couponTab.animate-pulse {
+    animation: pulse-blue 2s infinite;
+}
+
+/* Rebote de atención (nombre y comportamiento originales) */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+.animate-bounce {
+    animation: bounce 2s infinite;
+}
+
+#couponTab.animate-bounce {
+    animation: bounce 2s infinite;
+}
+
+#couponTab:hover {
+    background-color: var(--social-primary-dark, #560a74);
+    transform: scale(1.05);
+    box-shadow: 0 20px 38px -16px rgba(0, 0, 0, .6);
+}
+
+/* --------------------------------------------------------------------------
+   Texto y botón promocional
+   -------------------------------------------------------------------------- */
+.font-mercado {
+    display: inline-block;
+    font-family: var(--social-font, sans-serif);
+    font-size: clamp(1.35rem, 4vw, 1.7rem);
+    font-weight: 800;
+    letter-spacing: -.01em;
+    text-transform: uppercase;
+    color: var(--social-primary, #720d98);
+    transform: rotate(-2deg);
+}
+
+.btn-vibrant-red {
+    font-family: var(--social-font, sans-serif);
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    background-color: var(--social-primary, #720d98);
+    border: 3px solid #fff;
+    border-radius: var(--social-pill, 999px);
+    color: #fff;
+    padding: .8rem 1.4rem;
+    box-shadow: 0 18px 36px -18px rgba(114, 13, 152, .8);
+    transition: background-color .25s cubic-bezier(.22, .61, .36, 1),
+        border-color .25s cubic-bezier(.22, .61, .36, 1),
+        transform .25s cubic-bezier(.22, .61, .36, 1);
+}
+
+.btn-vibrant-red:hover {
+    background-color: var(--social-primary-dark, #560a74);
+    border-color: var(--social-primary-dark, #560a74);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* --------------------------------------------------------------------------
+   Móvil
+   -------------------------------------------------------------------------- */
+@media (max-width: 576px) {
+    .floating-card {
+        right: 20px;
+        left: 20px;
+        width: calc(100% - 40px);
+    }
+
+    #couponTab {
+        font-size: .95rem;
+        padding: .7rem 1.25rem;
+    }
+}

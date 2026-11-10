@@ -1,0 +1,28 @@
+<?php 
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "allcat"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+?> 
+    <section class="mb-5">
+        <h2 class="section-title"><?= Trd(1) ?></h2>
+        <div class="row g-4">
+                <?php
+                    $api_url = URL_API."categories";
+                    //$data = json_encode(["Product" => $_GET['Id']]);
+                    $data='';
+                    $data = json_decode(API($jwt,$api_url,$data,'POST'), true);
+                    if ($data['status'] === 'success') {
+                        foreach ($data['data'] as $category) {
+                            $imagen = trim(isset($category['Imagen']) ? (string)$category['Imagen'] : '');
+                            $category['Imagen'] = $imagen !== ''
+                                ? URL_IMAGES.'/categories/thumbnails/'.$imagen
+                                : 'src/img/noimage.svg';
+                            
+                            $URL = str_replace(" ","-",$category['Nombre']);
+                            //echo "<div class='col-6 col-md-4 col-lg-2'><a href='".URL_BASE."/products/{$URL}' class='cat-card'><img height='125px' src='{$category['Imagen']}' alt='{$category['Nombre']}'> </a>{$category['Nombre']}</div>";
+                            echo "<div class='col-6 col-md-4 col-lg-2'><a href='".URL_BASE."/products/{$URL}' class='cat-card' style='overflow:hidden;'><img src='{$category['Imagen']}' alt='{$category['Nombre']}' style='display:block;width:100%;max-width:100%;height:125px;object-fit:contain;'> </a>{$category['Nombre']}</div>";
+                        }        
+                    } 
+                ?>
+        </div>
+    </section>
