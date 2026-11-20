@@ -353,7 +353,7 @@ function formatTime12Hour(time) {
         electric:"",
         signature:"",
         signeddate:"",
-        "link_to_accept":'contract.php?Id=<?php echo $token;?>'
+        "link_to_accept":'newcontract.php?Id=<?php echo $token;?>'
     };
 
     const productos = [];
