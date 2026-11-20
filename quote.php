@@ -349,11 +349,7 @@ function formatTime12Hour(time) {
         apayment: "<?php echo $lead['DepositAmount']?>",
         cardcharge: <?= json_encode($card_charge_percentage > 0 ? (float) $lead['DepositAmount'] * ($card_charge_percentage / 100) : 0) ?>,
         atopay: <?= json_encode($card_charge_percentage > 0 ? (float) $lead['DepositAmount'] * (1 + ($card_charge_percentage / 100)) : 0) ?>,
-        <?php  if ($account['Deposit'] == 1){?>
-            balancedue: "<?php if ($lead['BalanceQ'] == ""){echo $lead['Total'] - $lead['DepositAmount'];}else{echo $lead['BalanceQ'];}?>",
-        <?php  } else {?>
-            balancedue: "<?php echo $lead['Total'];?>",        
-        <?php  }?>
+        balancedue: "<?php echo $lead['Total'];?>",        
         electric:"",
         signature:"",
         signeddate:"",
@@ -364,7 +360,11 @@ function formatTime12Hour(time) {
     const descuentos = [];
 
 
-
+        //<?php  if ($account['Deposit'] == 1){?>
+        //    balancedue: "<?php if ($lead['BalanceQ'] == ""){echo $lead['Total'] - $lead['DepositAmount'];}else{echo $lead['BalanceQ'];}?>",
+        //<?php  } else {?>
+        //    balancedue: "<?php echo $lead['Total'];?>",        
+        //<?php  }?>s
 
 <?php
     echo $respuesta['script_push'];

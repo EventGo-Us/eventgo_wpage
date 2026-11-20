@@ -390,13 +390,8 @@ function formatTime12Hour(time) {
         apayment: "<?php echo $lead['DepositAmount']?>",
         cardcharge: <?= json_encode($card_charge_percentage > 0 ? (float) $lead['DepositAmount'] * ($card_charge_percentage / 100) : 0) ?>,
         atopay: <?= json_encode($card_charge_percentage > 0 ? (float) $lead['DepositAmount'] * (1 + ($card_charge_percentage / 100)) : 0) ?>,
-        //ctr_balance_due: "<?php echo $lead['Balance']?>",
-        <?php  if ($account['Deposit'] == 1){?>
-            ctr_balance_due: "<?php if ($lead['BalanceQ'] == ""){echo $lead['Total'] - $lead['DepositAmount'];}else{echo $lead['BalanceQ'];}?>",
-        <?php  } else {?>
-            ctr_balance_due: "<?php echo $lead['Total'];?>",        
-        <?php  }?>        
-        //ctr_balance_due: "<?php if ($lead['BalanceQ'] == ""){echo $lead['Total'] - $lead['DepositAmount'];}else{echo $lead['BalanceQ'];}?>",
+        ctr_balance_due: "<?php echo $lead['Total']?>",
+
 
         electric:""
     };
