@@ -1211,8 +1211,14 @@ $(document).ready(function() {
         });
 
         const docPath = (data && data.document) ? data.document : (quoteUuid + '.pdf');
-        $('#download-contract-btn').attr('href', docPath + '?v=' + Date.now());
-        $('#download-contract-btn').attr('download', docPath);
+        const filename = (data && data.filename) ? data.filename : (quoteUuid + '.pdf');
+
+        if (docPath.startsWith('data:')) {
+            $('#download-contract-btn').attr('href', docPath);
+        } else {
+            $('#download-contract-btn').attr('href', docPath + '?v=' + Date.now());
+        }
+        $('#download-contract-btn').attr('download', filename);
 
         $('#contract-badge-status')
             .removeClass('bg-warning text-dark bg-info')

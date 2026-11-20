@@ -137,20 +137,26 @@ $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
 
 $pdfOutput = $dompdf->output();
-file_put_contents($token.".pdf", $pdfOutput);
+$base64Pdf = base64_encode($pdfOutput);
 
 $data = json_encode([
     "UUID" => $token,
-    "PDF" => base64_encode($pdfOutput)
+    "PDF" => $base64Pdf
 ]);
 
 $api_url = URL_API."sendbook";
 $data = json_decode(API($jwt,$api_url,$data,'POST'), true);  
 
+// Eliminar el archivo del disco si existe
+if (file_exists($token.".pdf")) {
+    @unlink($token.".pdf");
+}
+
 http_response_code(200);
 echo json_encode(array(
     "data" => 'Ok',
-    "document" => $token.".pdf",
+    "document" => "data:application/pdf;base64," . $base64Pdf,
+    "filename" => $token.".pdf",
     "UUID" => $token
 ));
 
