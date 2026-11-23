@@ -10,6 +10,7 @@
             <?php echo COMPANY_NAME?>
         </a>
 
+        <?php require __DIR__.'/../nav-product-search.php'; ?>
         <div class="d-flex align-items-center ms-auto me-3 order-lg-last">
             <a class="nav-link position-relative p-2" href="#" id="cartIcon" onclick="$('#modalReserva').modal('show');">
                 <i class="fas fa-shopping-cart fa-lg" style="color:var(--hot-pink);"></i>

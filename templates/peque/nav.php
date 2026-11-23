@@ -43,6 +43,7 @@
                     <li><a class="dropdown-item lang-option" href="#" data-lang="en"><?= Trd(8) ?></a></li>
                 </ul>
             </div>
+            <?php require __DIR__.'/../nav-product-search.php'; ?>
             <a class="nav-link position-relative pekez-cart" href="#" id="cartIcon" aria-label="Carrito" onclick="$('#modalReserva').modal('show'); return false;">
                 <i class="fas fa-shopping-cart fa-lg"></i>
                 <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>

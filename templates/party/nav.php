@@ -8,6 +8,7 @@
         <a class="navbar-brand fw-bold" href="<?php echo URL_BASE?>">
             <img height="36px" src="<?php echo COMPANY_LOGO?>" alt="<?php echo COMPANY_NAME?>"><?php echo COMPANY_NAME?>
         </a>
+        <?php require __DIR__.'/../nav-product-search.php'; ?>
         <div class="d-flex align-items-center ms-auto me-3 order-lg-last">
         <a class="nav-link position-relative p-2" href="#" id="cartIcon" style="color: white;">
             <i class="fas fa-shopping-cart fa-lg" onclick=" $('#modalReserva').modal('show');"></i>
