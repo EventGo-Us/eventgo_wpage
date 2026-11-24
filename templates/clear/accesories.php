@@ -10,6 +10,7 @@
                     $Name = '"'.$Accesory['Name'].'"';
                     $Price = '"'.$Accesory['Price'].'"';
                     $Image = '"'.$Accesory['Image'].'"';
+                    $Quantity = '"'.$Accesory['Quantity'].'"';
                     $Url = '""';
                     echo "<div class='col-6 col-md-4 col-lg-2'>
                         <p  class='cat-card'>
@@ -18,7 +19,7 @@
                             <br>
                             $ ".$Accesory['Price']."
                             <br>
-                            <button type='button' onclick='agregarExtraAItem({$Accesory['Producto_rp']},{$Accesory['Producto_r']},{$Name},{$Price},{$Image},{$Url})' class='btn btn-dark w-100 fw-bold py-2 shadow-sm rounded-3'>
+                            <button type='button' onclick='agregarExtraAItem({$Accesory['Producto_rp']},{$Accesory['Producto_r']},{$Name},{$Price},{$Image},{$Url},{$Quantity})' class='btn btn-dark w-100 fw-bold py-2 shadow-sm rounded-3'>
                                 <i class='fa-solid fa-cart-plus'></i> ".Trd(1)." 
                             </button>
                         </p>

@@ -71,11 +71,26 @@ data.items.forEach(item => {
         let htmlExtrasAgregados = '';
         if (item.adicionales && item.adicionales.length > 0) {
             item.adicionales.forEach(extra => {
+                const cantidadExtra = Number(extra.cantidad) || 1;
+                const existenciaExtra = Number(extra.existencia);
+                const cantidadItem = Number(item.cantidad) || 1;
+                const subtotalExtra = (Number(extra.precio) || 0) * cantidadExtra;
+                const puedeAgregarExtra = Number.isFinite(existenciaExtra)
+                    && (cantidadExtra + 1) * cantidadItem <= existenciaExtra;
                 htmlExtrasAgregados += `
                     <div class="d-flex justify-content-between align-items-center mb-1 text-muted" style="font-size: 0.75rem;">
                         <span><i class="fa-solid fa-check text-success me-1"></i> ${extra.nombre}</span>
-                        <div>
-                            <span class="me-2">+$${extra.precio}</span>
+                        <div class="d-flex align-items-center">
+                            <span class="me-2">+$${formatCurrency(Number(extra.precio) || 0)} × ${cantidadExtra} = $${formatCurrency(subtotalExtra)}</span>
+                            <div class="btn-group btn-group-sm border rounded-pill bg-light me-2">
+                                <button type="button" class="btn btn-light py-0 px-2 fw-bold"
+                                        onclick="cambiarCantidadAdicional('${item.id}', '${extra.id}', -1); cargarResumenCheckout()"
+                                        ${cantidadExtra <= 1 ? 'disabled' : ''}>-</button>
+                                <span class="px-2 bg-light fw-bold align-self-center">${cantidadExtra}</span>
+                                <button type="button" class="btn btn-light py-0 px-2 fw-bold"
+                                        onclick="cambiarCantidadAdicional('${item.id}', '${extra.id}', 1); cargarResumenCheckout()"
+                                        ${puedeAgregarExtra ? '' : 'disabled'}>+</button>
+                            </div>
                             <button class="btn btn-link btn-sm p-0 text-danger" onclick="eliminarAdicionalDeItem('${item.id}', '${extra.id}');cargarResumenCheckout()">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
@@ -197,8 +212,8 @@ $(document).ready(function() {
     cargarResumenCheckout();
 });
 
-function agregarExtraRapido(itemId, itemRl,Name,Price,Image,Url) {
-    agregarExtraAItem(itemId, itemRl,Name,Price,Image,Url)
+function agregarExtraRapido(itemId, itemRl,Name,Price,Image,Url,Quantity) {
+    agregarExtraAItem(itemId, itemRl,Name,Price,Image,Url,Quantity)
     renderizarCarrito();
     cargarResumenCheckout(); // Refresca el resumen para mostrar el cambio
 }

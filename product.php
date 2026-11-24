@@ -445,6 +445,7 @@
                                     (string) $accesorio['Price'],
                                     $imagenExtra,
                                     '',
+                                    1,
                                     'hidden-accessories'
                                 ];
                                 $argumentosExtra = implode(',', array_map(function ($valor) {

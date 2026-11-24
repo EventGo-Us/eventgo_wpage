@@ -361,7 +361,7 @@ function animarCarritoConMensaje(producto) {
     }, 2000);
 }
 
-function agregarExtraAItem(itemId, itemRl,Name,Price,Image,Url,grupoExclusivo = null) {
+function agregarExtraAItem(itemId, itemRl,Name,Price,Image,Url,Quantity,grupoExclusivo = null) {
 
 
     const extra = {
@@ -370,6 +370,9 @@ function agregarExtraAItem(itemId, itemRl,Name,Price,Image,Url,grupoExclusivo = 
         precio: Price,
         imagen: Image,
         url: Url,
+        cantidad: 1,
+        existencia: Quantity,
+        subtotal: Price * 1,
         ...(grupoExclusivo ? { grupo: grupoExclusivo } : {})
     };    
 
@@ -454,19 +457,47 @@ function eliminarAdicionalDeItem(itemId, adicionalId) {
     }
 }
 
+function cambiarCantidadAdicional(itemId, adicionalId, delta) {
+    const carrito = obtenerCarrito();
+    const item = carrito.find(p => String(p.id) === String(itemId));
+    const extra = item && item.adicionales
+        ? item.adicionales.find(a => String(a.id) === String(adicionalId))
+        : null;
+
+    if (!item || !extra) return;
+
+    const cantidadActual = Number(extra.cantidad) || 1;
+    const nuevaCantidad = cantidadActual + delta;
+    const existencia = Number(extra.existencia);
+    const cantidadItem = Number(item.cantidad) || 1;
+
+    if (nuevaCantidad < 1 || !Number.isFinite(existencia) || nuevaCantidad * cantidadItem > existencia) return;
+
+    extra.cantidad = nuevaCantidad;
+    extra.subtotal = (Number(extra.precio) || 0) * nuevaCantidad;
+    guardarCarrito(carrito);
+}
+
 // --- 5. CALCULAR TOTALES (Dinero y Cantidades) ---
 function obtenerTotales() {
     const carrito = obtenerCarrito();
 
     const calculos = carrito.reduce((acc, item) => {
-        let precioItem = item.precio;
+        const cantidadItem = Number(item.cantidad) || 0;
+        let precioItem = Number(item.precio) || 0;
         // Sumar precios de adicionales si existen
         if (item.adicionales) {
-            precioItem += item.adicionales.reduce((sum, ad) => sum + (ad.precio*1), 0);
+            precioItem += item.adicionales.reduce((sum, ad) => {
+                const cantidadExtra = Number(ad.cantidad) || 1;
+                return sum + ((Number(ad.precio) || 0) * cantidadExtra);
+            }, 0);
+            acc.cantidadTotal += item.adicionales.reduce((sum, ad) => {
+                return sum + ((Number(ad.cantidad) || 1) * cantidadItem);
+            }, 0);
         }
         
-        acc.subtotal += (precioItem * item.cantidad);
-        acc.cantidadTotal += item.cantidad;
+        acc.subtotal += (precioItem * cantidadItem);
+        acc.cantidadTotal += cantidadItem;
         return acc;
     }, { subtotal: 0, cantidadTotal: 0 });
 
@@ -494,6 +525,8 @@ function renderizarCarrito() {
     carrito.forEach(item => {
 
         let htmlListaExtras = '';
+        const cantidadItem = Number(item.cantidad) || 0;
+        const subtotalItem = (Number(item.precio) || 0) * cantidadItem;
 
         if (item.adicionales && item.adicionales.length > 0) {
             // Contenedor con fondo sutil para agrupar los extras del producto
@@ -503,6 +536,12 @@ function renderizarCarrito() {
             item.adicionales.forEach(extra => {
                 // Si no tienes imagen para el extra, puedes usar un placeholder o un icono
                 const imgExtra = extra.imagen ?  extra.imagen : 'https://via.placeholder.com/35';
+                const cantidadExtra = Number(extra.cantidad) || 1;
+                const existenciaExtra = Number(extra.existencia);
+                const cantidadItem = Number(item.cantidad) || 1;
+                const subtotalExtra = (Number(extra.precio) || 0) * cantidadExtra;
+                const puedeAgregarExtra = Number.isFinite(existenciaExtra)
+                    && (cantidadExtra + 1) * cantidadItem <= existenciaExtra;
                 
                 htmlListaExtras += `
                     <div class="d-flex justify-content-between align-items-center mb-2 animate__animated animate__fadeIn">
@@ -512,15 +551,26 @@ function renderizarCarrito() {
                             
                             <div>
                                 <span class="d-block fw-bold text-dark" style="font-size: 0.75rem; line-height: 1;">${extra.nombre}</span>
-                                <span class="text-muted" style="font-size: 0.7rem;">+$${extra.precio}</span>
+                                <span class="text-muted" style="font-size: 0.7rem;">+$${formatCurrency(Number(extra.precio) || 0)} × ${cantidadExtra} = $${formatCurrency(subtotalExtra)}</span>
                             </div>
                         </div>
-                        
-                        <button type="button" class="btn btn-link text-danger p-0 border-0 ms-2" 
-                                onclick="eliminarAdicionalDeItem(${item.id}, '${extra.id}')"
-                                title="${trd(7, "Eliminar adicional")}">
-                            <i class="fa-solid fa-circle-xmark fs-6"></i>
-                        </button>
+
+                        <div class="d-flex align-items-center ms-2">
+                            <div class="btn-group btn-group-sm border rounded-pill bg-white">
+                                <button type="button" class="btn btn-light py-0 px-2 fw-bold"
+                                        onclick="cambiarCantidadAdicional('${item.id}', '${extra.id}', -1)"
+                                        ${cantidadExtra <= 1 ? 'disabled' : ''}>-</button>
+                                <span class="px-2 bg-white fw-bold align-self-center">${cantidadExtra}</span>
+                                <button type="button" class="btn btn-light py-0 px-2 fw-bold"
+                                        onclick="cambiarCantidadAdicional('${item.id}', '${extra.id}', 1)"
+                                        ${puedeAgregarExtra ? '' : 'disabled'}>+</button>
+                            </div>
+                            <button type="button" class="btn btn-link text-danger p-0 border-0 ms-2"
+                                    onclick="eliminarAdicionalDeItem('${item.id}', '${extra.id}')"
+                                    title="${trd(7, "Eliminar adicional")}">
+                                <i class="fa-solid fa-circle-xmark fs-6"></i>
+                            </button>
+                        </div>
                     </div>`;
             });
             htmlListaExtras += '</div>';
@@ -600,7 +650,7 @@ function renderizarCarrito() {
                                     <span class="px-2 bg-light fw-bold align-self-center">${item.cantidad}</span>
                                     <button class="btn btn-light py-0 px-2 fw-bold" onclick="cambiarCantidad(${item.id}, 1)" ${item.existencia <= 0 ? 'disabled' : ''}>+</button>
                                 </div>
-                                <span class="fw-bold text-dark">$${formatCurrency(item.precio * item.cantidad)}</span>
+                                <span class="fw-bold text-dark">$${formatCurrency(subtotalItem)}</span>
                             </div>
                         </div>
                     </div>
