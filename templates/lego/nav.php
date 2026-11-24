@@ -11,7 +11,7 @@
             <?php echo COMPANY_NAME?>
         </a>
 
-        <?php require __DIR__.'/../nav-product-search.php'; ?>
+
         <!-- Carrito de Compras (Con estilos lego-yellow y disparador de Modal integrado) -->
         <div class="d-flex align-items-center ms-auto me-3 order-lg-last">
             <a class="nav-link position-relative p-2" href="#" id="cartIcon" onclick="$('#modalReserva').modal('show');">
@@ -73,6 +73,7 @@
                     </ul>
                 </li>
             </ul>
+            <?php require __DIR__.'/../nav-product-search.php'; ?>
         </div>
     </div>
 </nav>

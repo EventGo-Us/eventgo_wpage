@@ -9,8 +9,6 @@
         <a class="navbar-brand fw-bold" href="<?php echo URL_BASE?>">
             <img height="36px" src="<?php echo COMPANY_LOGO?>" alt="<?php echo COMPANY_NAME?>"><?php echo COMPANY_NAME?>
         </a>
-
-        <?php require __DIR__.'/../nav-product-search.php'; ?>
         <!-- Carrito de Compras (Con el disparador del Modal en la etiqueta 'a' para mejorar clicabilidad) -->
         <div class="d-flex align-items-center ms-auto me-3 order-lg-last">
             <a class="nav-link position-relative p-2" href="#" id="cartIcon" style="color: white;" onclick="$('#modalReserva').modal('show');">
@@ -61,10 +59,6 @@
                         <li><a class="dropdown-item" href="<?php echo URL_BASE?>/contact"><?= Trd(6) ?></a></li>
                     </ul>
                 </li>
-
-
-             
-
                 <!-- Dropdown Selección de Idioma -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropIdiomas" data-bs-toggle="dropdown">
@@ -76,6 +70,7 @@
                     </ul>
                 </li>
             </ul>
+            <?php require __DIR__.'/../nav-product-search.php'; ?>
         </div>
     </div>
 </nav>

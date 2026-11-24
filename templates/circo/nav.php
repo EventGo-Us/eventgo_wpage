@@ -17,7 +17,7 @@
             <?php echo COMPANY_NAME?>
         </a>
 
-        <?php require __DIR__.'/../nav-product-search.php'; ?>
+        
         <div class="d-flex align-items-center ms-auto me-3 order-lg-last">
             <a class="nav-link position-relative p-2" href="#" id="cartIcon" style="color: var(--gold);" onclick="$('#modalReserva').modal('show');">
                 <i class="fas fa-shopping-cart fa-lg"></i>
@@ -71,6 +71,7 @@
                     </ul>
                 </li>
             </ul>
+            <?php require __DIR__.'/../nav-product-search.php'; ?>
         </div>
     </div>
 </nav>
