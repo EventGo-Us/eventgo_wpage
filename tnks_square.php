@@ -68,7 +68,7 @@ if ($data) {
 
 <script src="<?php echo TEMPLATE;?>js/idx-template.js"></script>
 <?php require_once 'scripts.php'; ?>
-<script src="js/general.php"></script>
+<script src="js/general.js"></script>
 
 
 </body>

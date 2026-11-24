@@ -42,7 +42,7 @@
 <?php require_once TEMPLATE.'scripts.php'; ?>
 <?php require_once 'scripts.php'; ?>
 <script src="<?php echo URL_BASE."/".TEMPLATE;?>js/idx-template.js"></script>
-<script src="<?php echo URL_BASE."/";?>js/general.php"></script>
+<script src="<?php echo URL_BASE."/";?>js/general.js"></script>
 <?php 
     $Traducciones = $Traducciones_Rsp;
 ?>

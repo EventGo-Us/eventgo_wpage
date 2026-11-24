@@ -217,7 +217,7 @@
 <?php require_once TEMPLATE.'scripts.php'; ?>
 <?php require_once 'scripts.php'; ?>
 <script src="<?php echo TEMPLATE;?>js/idx-template.js"></script>
-<script src="js/general.php"></script>
+<script src="js/general.js"></script>
 <script>
     window.history.pushState(null, "", window.location.href);
     window.onpopstate = function() {

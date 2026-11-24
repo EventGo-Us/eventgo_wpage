@@ -611,7 +611,7 @@ $(document).ready(function() {
 <?php require_once TEMPLATE.'scripts.php'; ?>
 <?php require_once 'scripts.php'; ?>
 <script src="<?php echo TEMPLATE;?>js/idx-template.js"></script>
-<script src="js/general.php"></script>
+<script src="js/general.js"></script>
 <script>
     $(document).ready(function() {
     const url = '<?= $token ?>.pdf'; // Ruta de tu PDF

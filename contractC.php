@@ -150,7 +150,7 @@
 
             echo "<script src='". TEMPLATE."js/idx-template.js'></script>";
             die('
-            <script src="js/general.php"></script>
+            <script src="js/general.js"></script>
             <script>
             </script>
             </body>
@@ -550,7 +550,7 @@ function ejecutarRenderizadoContract($contenedor, $cuerpoTabla, $filaPlantilla, 
 <?php require_once TEMPLATE.'scripts.php'; ?>
 <?php require_once 'scripts.php'; ?>
 <script src="<?php echo TEMPLATE;?>js/idx-template.js"></script>
-<script src="js/general.php"></script>
+<script src="js/general.js"></script>
 <script>
 </script>
 </body>

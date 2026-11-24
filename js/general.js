@@ -1,5 +1,13 @@
 // Lógica simple para el contador del carrito
-let itemCount = 0;
+if (typeof trd !== 'function') {
+    window.trd = function(id, fallback = '') {
+        return (typeof TRADUCCIONES_GENERAL !== 'undefined' && TRADUCCIONES_GENERAL && TRADUCCIONES_GENERAL[id])
+            ? TRADUCCIONES_GENERAL[id]
+            : fallback;
+    };
+}
+
+// let itemCount = 0;
 const cartCountElement = document.getElementById('cartCount');
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -9,10 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         inline: true,
         locale: "es",
         minDate: "today",
-        disable: [{
-            from: "2026-11-14",
-            to: "2026-11-18"
-        }],
+        disable: (typeof BLACKOUT_DATES !== 'undefined' && Array.isArray(BLACKOUT_DATES)) ? BLACKOUT_DATES : [],
         dateFormat: "Y-m-d"
     });
 
@@ -45,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const fechas = fp.selectedDates;
         
         if (fechas.length < 1) {
-            alert("Por favor selecciona dos fechas en el calendario.");
+            lanzarAlerta(trd(1, "Por favor seleccione una fecha"), 'warning');
             return;
         }
 /*
@@ -73,69 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 $(document).ready(function() {
-    // 1. Al dar clic en "Seleccionar Fecha"
-    $('#btnConfirmarFecha').on('click', function() {
-        const fechaVal = $('#calendarioRango').val();
-        
-        if (fechaVal !== "") {
-            // Actualizar el texto del resumen
-            $('#textoFechaRango').text(fechaVal);
-            
-            // Animación: Ocultar calendario, mostrar resumen
-            $('#contenedorCalendario').slideUp(400, function() {
-                $('#resumenFecha').removeClass('d-none').hide().fadeIn();
-            });
 
-    //const carrito = obtenerCarrito();
-    //carrito.forEach(item => {
-    //    alert(item.id)
-    //});
-
-    const carrito = obtenerCarrito();
-
-    const datos = {
-    items: carrito.map(item => ({
-        id: item.id,
-        precio: item.precio,
-        cantidad: item.cantidad,
-        existencia: item.existencia
-    })),
-
-    SD: $('#FI').val(),
-    ED: $('#FF').val(),
-    SH: '08:00',
-    EH: '16:00'
-};
-
-$.ajax({
-    url: url_api+'cart_update',
-    type: 'POST',
-    contentType: 'application/json',
-    data: JSON.stringify(datos),
-    headers: {
-        'Authorization': 'Bearer ' + token,
-        'X-ID-CLIENT': id_client
-    },
-    success: function(response) {
-        console.log('Éxito:', response);
-        // Procesar respuesta
-        cart_update(response.data);
-        
-    },
-    error: function(xhr, status, error) {
-        console.error('Error:', error);
-        mostrarError('Error al revalidar el carrito');
-    }
-});    
-
-
-            
-
-        } else {
-            // Opcional: Algún feedback visual si no hay fecha
-            $('#calendarioRango').addClass('is-invalid').focus();
-        }
-    });
 
     // 2. Al dar clic en el icono pequeño (Reabrir)
     $('#btnReabrirCalendario').on('click', function() {
@@ -335,7 +278,7 @@ function validar_cupon(){
         });    
     }
     else{
-        lanzarAlerta("Es necesario ingresar un código", 'warning');
+        lanzarAlerta(trd(3, "Por favor seleccione una fecha"), 'warning');
     }
 }
 
@@ -350,7 +293,7 @@ function guardarCupon(code,type,val) {
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     
-    animarCarritoConMensaje('Cupon ');
+    animarCarritoConMensaje(trd(21, "Cupón aplicado"));
     renderizarCarrito();
     //pintarLogCarrito();
 }
@@ -369,14 +312,14 @@ function agregarAlCarrito(producto,cantidad) {
     }
     guardarCarrito(carrito);
 
-    animarCarritoConMensaje('Producto')
+    animarCarritoConMensaje(trd(20, "Producto agregado al carrito"));
 
 }
 
 function animarCarritoConMensaje(producto) {
     // Crear elemento de notificación
     const notificacion = document.createElement('div');
-    notificacion.textContent = `✓ ${producto} agregado !!`;
+    notificacion.textContent = `✓ ${producto} !!`;
     notificacion.style.cssText = `
         position: fixed;
         top: 20px;
@@ -446,11 +389,12 @@ function agregarExtraAItem(itemId, itemRl,Name,Price,Image,Url,grupoExclusivo = 
             if (grupoExclusivo) {
                 item.adicionales = item.adicionales.filter(a => a.grupo !== grupoExclusivo);
             }
+            
             item.adicionales.push(extra);
             // GuardarCarrito ya se encarga de actualizar LocalStorage y refrescar la UI
             guardarCarrito(carrito); 
 
-            animarCarritoConMensaje('Producto')            
+            animarCarritoConMensaje(trd(20, "Producto agregado al carrito"));            
 
         } else {
 
@@ -541,10 +485,10 @@ function renderizarCarrito() {
     let Descuento = 0;
     
     // Limpiar contenedor pero mantener el label
-    $contenedor.html('<label class="small fw-bold text-muted text-uppercase d-block mb-3" style="font-size: 0.65rem;">Artículos en el carrito</label>');
+    $contenedor.html('<label class="small fw-bold text-muted text-uppercase d-block mb-3" style="font-size: 0.65rem;">' + trd(4, "Productos seleccionados") + '</label>');
 
     if (carrito.length === 0) {
-        $contenedor.append('<p class="text-center text-muted my-4">El carrito está vacío</p>');
+        $contenedor.append('<p class="text-center text-muted my-4">' + trd(5, "Tu carrito está vacío") + '</p>');
     }
 
     carrito.forEach(item => {
@@ -554,7 +498,7 @@ function renderizarCarrito() {
         if (item.adicionales && item.adicionales.length > 0) {
             // Contenedor con fondo sutil para agrupar los extras del producto
             htmlListaExtras = '<div class="mt-2 border-top pt-2 bg-light rounded-2 p-2 shadow-sm">';
-            htmlListaExtras += '<p class="fw-bold mb-2 text-muted" style="font-size: 0.65rem; letter-spacing: 0.5px;"><i class="fa-solid fa-plus-circle me-1 text-success"></i> COMPLEMENTOS SELECCIONADOS</p>';
+            htmlListaExtras += '<p class="fw-bold mb-2 text-muted" style="font-size: 0.65rem; letter-spacing: 0.5px;"><i class="fa-solid fa-plus-circle me-1 text-success"></i> ' + trd(6, "Adicionales") + '</p>';
 
             item.adicionales.forEach(extra => {
                 // Si no tienes imagen para el extra, puedes usar un placeholder o un icono
@@ -574,7 +518,7 @@ function renderizarCarrito() {
                         
                         <button type="button" class="btn btn-link text-danger p-0 border-0 ms-2" 
                                 onclick="eliminarAdicionalDeItem(${item.id}, '${extra.id}')"
-                                title="Quitar complemento">
+                                title="${trd(7, "Eliminar adicional")}">
                             <i class="fa-solid fa-circle-xmark fs-6"></i>
                         </button>
                     </div>`;
@@ -620,7 +564,7 @@ function renderizarCarrito() {
 
         // Definimos el overlay solo si no hay existencia
         const overlayNoDisponible = item.existencia <= 0 
-            ? `<div class="not-available-overlay">NO DISPONIBLE</div>` 
+            ? `<div class="not-available-overlay">${trd(8, "No disponible")}</div>` 
             : '';
 
         // Aplicamos un filtro de escala de grises a la imagen si no hay stock
@@ -643,7 +587,7 @@ function renderizarCarrito() {
                                         <h6 class="mb-0 fw-bold small">${item.nombre}</h6>
                                     </a>
                                     <p class="text-muted mb-2 small" style="font-size: 0.7rem;">
-                                        ${item.existencia <= 0 ? '<span class="text-danger fw-bold">Agotado</span>' : 'Incluye insumos'}
+                                        ${item.existencia <= 0 ? `<span class="text-danger fw-bold">${trd(9, "Agotado")}</span>` : trd(10, "Disponible")}
                                     </p>
                                 </div>                               
                                 <button type="button" class="btn btn-link text-danger p-0 border-0" onclick="eliminarDelCarrito(${item.id})">
@@ -668,9 +612,9 @@ function renderizarCarrito() {
     });
 
     // Actualizar Totales en el Footer
-    $('#Articulos').html(`Subtotal (${totales.cantidadTotal} artículos)`);
+    $('#Articulos').html(`${trd(11, "Artículos")} (${totales.cantidadTotal} ${trd(12, "piezas")})`);
     cartCountElement.innerText = totales.cantidadTotal;
-    $('#SubTotal').html(`$${formatCurrency(totales.subtotal)} MXN`);
+    $('#SubTotal').html(`$${formatCurrency(totales.subtotal)} ${CURRENCY_}`);
 
     
     const data = obtenerDatosRaw();
@@ -681,7 +625,7 @@ function renderizarCarrito() {
 
         if (data.cupon.code){
             if (data.cupon.code != ""){
-                $('#EtiquetaCupon').html(` Descuento ( ${data.cupon.code} )`);
+                $('#EtiquetaCupon').html(`  ${trd(18, "Cupón")} ( ${data.cupon.code} )`);
                 if (data.cupon.type == 'percentage'){
                     Descuento = totales.total *  (data.cupon.val / 100);
                 }
@@ -691,15 +635,15 @@ function renderizarCarrito() {
             }
         }
         else{
-            $('#EtiquetaCupon').html(` Descuento ( No Aplicado )`);
+            $('#EtiquetaCupon').html(` ${trd(13, "Cupón")}`);
         }
-        $('#Descuento').html(`$${formatCurrency(Descuento)} MXN`);
+        $('#Descuento').html(`$${formatCurrency(Descuento)} ${CURRENCY_}`);
 
         if (Descuento < totales.total)
             totales.total = totales.total - Descuento;
     }
 
-    $('.modal-footer .fs-5 .text-primary').html(`$${formatCurrency(totales.total)} MXN`);
+    $('.modal-footer .fs-5 .text-primary').html(`$${formatCurrency(totales.total)} ${CURRENCY_}`);
 }
 
 function setearComponentesCabecera() {
@@ -784,6 +728,8 @@ function setearComponentesCabecera() {
 }
 
 $('#btnConfirmarFecha').on('click', function() {
+    const $btn = $(this); // Guardamos la referencia al botón
+    const $btn2 = $('#btnConfirmar'); // Guardamos la referencia al botón
     const fechaVal = $('#calendarioRango').val();
     const hInicio = $('#hInicio').val();
     const hFin = $('#hFin').val();
@@ -793,11 +739,13 @@ $('#btnConfirmarFecha').on('click', function() {
     
     if (fechaVal !== "") {
         // Guardar en la sesión del navegador
-        guardarCabecera(fechaVal, hInicio, hFin,cOde,tYpe,vAl);
-        
+        guardarCabecera(fechaVal, hInicio, hFin, cOde, tYpe, vAl);      
 
         const calendario = $('#calendarioRango')[0]._flatpickr;
         const fechas = calendario.selectedDates;
+
+        let fechaInicialStr = "";
+        let fechaFinalStr = "";
 
         if (fechas.length === 2) {
             const fechaInicial = fechas[0];
@@ -811,22 +759,90 @@ $('#btnConfirmarFecha').on('click', function() {
                 return `${year}-${month}-${day}`;
             };
             
-            const fechaInicialStr = formatoFecha(fechaInicial);
-            const fechaFinalStr = formatoFecha(fechaFinal);
+            fechaInicialStr = formatoFecha(fechaInicial);
+            fechaFinalStr = formatoFecha(fechaFinal);
             
-            //console.log('Fecha inicial:', fechaInicialStr);
-            //console.log('Fecha final:', fechaFinalStr);
-            $('#FI').val(fechaInicialStr); // Objeto Date
-            $('#FF').val(fechaFinalStr);   // Objeto Date            
+            $('#FI').val(fechaInicialStr); 
+            $('#FF').val(fechaFinalStr);   
         }
 
-        // Efectos visuales
+        // --- DETECTAR PARÁMETROS EN URL Y RECARGAR ---
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.has('SD') && urlParams.has('ED')) {
+            // 1. Forzar a que el contenedor se quede visible y detener animaciones
+            // $('#contenedorCalendario').stop().show();
+
+            // 2. Deshabilitar botón y colocar Spinner
+            $btn.prop('disabled', true)
+                .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + trd(19, "Actualizando..."));
+
+            $btn2.prop('disabled', true)
+                .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + trd(19, "Actualizando..."));                
+
+            if (fechaInicialStr && fechaFinalStr) {
+                urlParams.set('SD', fechaInicialStr);
+                urlParams.set('ED', fechaFinalStr);
+            }
+            if (hInicio) urlParams.set('SH', hInicio);
+            if (hFin) urlParams.set('EH', hFin);
+
+   const carrito = obtenerCarrito();
+
+    const datos = {
+    items: carrito.map(item => ({
+        id: item.id,
+        precio: item.precio,
+        cantidad: item.cantidad,
+        existencia: item.existencia
+    })),
+
+    SD: $('#FI').val(),
+    ED: $('#FF').val(),
+    SH: '08:00',
+    EH: '16:00'
+};
+
+$.ajax({
+    url: url_api+'cart_update',
+    type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(datos),
+    headers: {
+        'Authorization': 'Bearer ' + token,
+        'X-ID-CLIENT': id_client
+    },
+    success: function(response) {
+        console.log('Éxito:', response);
+        // Procesar respuesta
+        cart_update(response.data);
+        window.location.search = urlParams.toString();
+    },
+    error: function(xhr, status, error) {
+        console.error('Error:', error);
+        //mostrarError(trd(2, "Error"));
+    }
+});    
+
+
+
+            // 3. Delay para que el navegador renderice el spinner antes de la recarga
+            //setTimeout(function() {
+                //window.location.search = urlParams.toString();
+            //}, 150);
+            
+            return; // Importante: detenemos el flujo aquí para que NO ejecute el slideUp de abajo
+        }
+        // ---------------------------------------------
+
+        // Efectos visuales (Solo se ejecutan si NO se recarga la página)
         $('#textoFechaRango').text(fechaVal);
         $('#contenedorCalendario').slideUp(400, function() {
             $('#resumenFecha').removeClass('d-none').hide().fadeIn();
         });
+        
     } else {
-        alert("Selecciona un rango de fechas");
+        lanzarAlerta(" " + trd(14, "Por favor complete el rango de fechas"), 'warning');
     }
 });
 
@@ -887,13 +903,13 @@ function pintarLogCarrito() {
 function validarRangoFecha() {
     const input = document.getElementById("textoFechaRango");
     if (!input){
-        mostrarPopup("Por favor selecciona una fecha para tu evento.");
+        mostrarPopup(trd(15, "No se encontró el elemento de fecha"));
         return false;        
     }
 
     const valor = input.innerText.trim();
     if (!valor || valor.includes("--") || valor === "") {
-        mostrarPopup("Por favor, selecciona una fecha para tu evento.");
+        mostrarPopup(trd(16, "Debes seleccionar un rango de fechas válido"));
         $('#btnConfirmar').hide();
         
         return false;
@@ -910,12 +926,12 @@ function validarRangoFecha() {
 
     // 3. Validar si está en el pasado
     if (fechaFin < hoy) {
-        mostrarPopup("El periodo seleccionado ya ha pasado. Por favor, elija uno vigente.");
+        mostrarPopup(trd(17, "La fecha no puede ser en el pasado"));
         $('#btnConfirmar').hide();
         return false;
     }
 
-    console.log("Fecha válida");
+    //console.log("Fecha válida");
     $('#btnConfirmar').show();
     return true;
 }
@@ -987,7 +1003,7 @@ function formatCurrency(total) {
         e.preventDefault();
 
         $.ajax({
-            url: 'change_lng.php',
+            url: (typeof url_base !== 'undefined' ? url_base : '') + 'change_lng.php',
             type: 'POST',
             data: { lang: $(this).data('lang') },
             dataType: 'json',
